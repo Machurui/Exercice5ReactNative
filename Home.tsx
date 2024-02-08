@@ -24,27 +24,41 @@ const Home = () => {
 
 
     useEffect(() => {
-        const notes = JSON.parse(storage.getString('notes') || '[]');
-        setNotes(notes);
 
-        const state = NetInfo.addEventListener(state => {
-            if (state.type === NetInfoStateType.none) {
-                console.log('No Internet', 'Please check your internet connection');
-            } else {
-                dataSyncAPI();
-                console.log('Connected', 'You are connected to the internet');
-            }
-
-        })
-
-        const intervalId = setInterval(() => {
-            state();
+        const interval = setInterval(() => {
+            NetInfo.fetch().then(state => {
+                if (state.type === NetInfoStateType.none) {
+                    console.log('No Internet', 'Please check your internet connection');
+                } else {
+                    console.log('Connected', 'You are connected to the internet');
+                    dataSyncAPI();
+                }
+            });
         }, 1000);
-
         return () => {
-            state();
-            clearInterval(intervalId);
+            clearInterval(interval);
         };
+        // const notes = JSON.parse(storage.getString('notes') || '[]');
+        // setNotes(notes);
+
+        // const state = NetInfo.addEventListener(state => {
+        //     if (state.type === NetInfoStateType.none) {
+        //         console.log('No Internet', 'Please check your internet connection');
+        //     } else {
+        //         dataSyncAPI();
+        //         console.log('Connected', 'You are connected to the internet');
+        //     }
+
+        // })
+
+        // const intervalId = setInterval(() => {
+        //     state();
+        // }, 1000);
+
+        // return () => {
+        //     state();
+        //     clearInterval(intervalId);
+        // };
     }, []);
 
     return (
